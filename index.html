@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bluetooth Device Finder</title>
+<title>Display Connected Bluetooth Device</title>
 </head>
 <body>
 
-<h1>Find Nearby Bluetooth Devices</h1>
+<h1>Connected Bluetooth Device</h1>
 
-<button id="findDevices">Find Devices</button>
-
-<ul id="deviceList"></ul>
+<p id="deviceName">Please connect to a Bluetooth device.</p>
 
 <script>
-const findDevicesButton = document.getElementById('findDevices');
-const deviceList = document.getElementById('deviceList');
+  // Function to check for connected devices
+  function checkForConnectedDevice() {
+    navigator.bluetooth.requestDevice({ 
+      optionalServices: [] // Requesting no specific services
+    })
+    .then(device => {
+      // If a device is already connected, display its name
+      document.getElementById('deviceName').textContent = device.name; 
+    })
+    .catch(error => {
+      // If no device is connected, handle the error (optional)
+      // console.error("No device connected:", error); 
+    });
+  }
 
-findDevicesButton.addEventListener('click', () => {
-  navigator.bluetooth.requestDevice({
-    acceptAllDevices: true // Accept all discovered devices
-  })
-  .then(device => {
-    // Device found; now connect to it.
-    return device.gatt.connect();
-  })
-  .then(server => {
-    console.log("Connected to device:", device.name); 
-    // Display success message or further actions here
-  })
-  .catch(error => {
-    console.error('Request Device Failed', error);
-  });
-});
+  // Call the function initially and periodically
+  checkForConnectedDevice();
+  setInterval(checkForConnectedDevice, 1000); // Check every second
 
 </script>
 
